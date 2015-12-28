@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,6 +12,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,24 +23,35 @@ import android.content.Context;
 public class MainActivity extends AppCompatActivity {
     private TextView latitude;
     private TextView longitude;
+    private TextView testing;
     private LocationManager locationManager;
     private double lat;
     private double longi;
     Button showButton;
     Button mapButton;
     private Bundle bundle;
+    String provider;
+    int count=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+      /* locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+       provider= locationManager.getBestProvider(criteria, true);*/
         bundle = new Bundle();
         latitude = (TextView) findViewById(R.id.showLat);
         longitude = (TextView) findViewById(R.id.showLong);
         showButton = (Button) findViewById(R.id.okButton);
         mapButton=(Button) findViewById(R.id.mapButton);
+        testing=(TextView) findViewById(R.id.testView);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        provider= locationManager.getBestProvider(criteria, true);
+        locationManager.requestLocationUpdates(provider, 1000, 1, new MyLocationListener());
         final Context context  = this;
         mapButton.setOnClickListener(new View.OnClickListener() {
 
@@ -75,10 +88,12 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new MyLocationListener());
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new MyLocationListener());
         showButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                count++;
+//                testing.setText("Button Clicked:"+count);
                 showCurrentLocation();
 
             }
@@ -106,13 +121,16 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+
+        Location location = locationManager.getLastKnownLocation(provider);
 
         if (location != null) {
             lat=location.getLatitude();
             longi=location.getLongitude();
             bundle.putDouble("lat",lat);
-            bundle.putDouble("longi",longi);
+            bundle.putDouble("longi", longi);
+            testing.setText("Location Accuracy:"+location.getAccuracy());
             latitude.setText("Lat:"+String.valueOf(location.getLatitude()));
             longitude.setText("Long: "+String.valueOf(location.getLongitude()));
 
@@ -126,15 +144,16 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-    private class MyLocationListener implements LocationListener {
+ private class MyLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {
             // Initialize the location fields
             lat=location.getLatitude();
             longi=location.getLongitude();
-            latitude.setText("Lat:"+String.valueOf(location.getLatitude()));
-            longitude.setText("Long: "+String.valueOf(location.getLongitude()));
+//            latitude.setText("Lat:"+String.valueOf(location.getLatitude()));
+//            longitude.setText("Long: "+String.valueOf(location.getLongitude()));
+
 
 
         }
