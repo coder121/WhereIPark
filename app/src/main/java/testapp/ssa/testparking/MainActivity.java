@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView longitude;
     private TextView testing;
     private LocationManager locationManager;
-    private double lat;
-    private double longi;
+    private double lat=0;
+    private double longi=0;
     Button showButton;
     Button mapButton;
     private Bundle bundle;
@@ -60,7 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent( context, MapActivity.class);
                 intent.putExtras(bundle);
-                startActivity(intent);
+                if(lat!=0&&longi!=0){
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(MainActivity.this,"No parking location Found!",
+                            Toast.LENGTH_SHORT).show();
+                }
 
             }
 
